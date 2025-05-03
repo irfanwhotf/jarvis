@@ -84,19 +84,41 @@ def play_audio(audio_bytes):
         except Exception as e2:
             print(f"Fallback also failed: {e2}")
 
-def generate_notification_sound(frequency=880, duration=0.3):
-    """Generate a simple notification sound"""
+def generate_notification_sound(duration=0.5):
+    """Generate a more distinct two-tone notification sound"""
     sample_rate = 44100
     t = np.linspace(0, duration, int(sample_rate * duration), False)
-    # Generate a sine wave
-    note = np.sin(frequency * t * 2 * np.pi)
-    # Apply a simple envelope to avoid clicks
+
+    # Generate two tones for a more distinct sound
+    freq1 = 880  # Higher frequency
+    freq2 = 660  # Lower frequency
+
+    # First half is higher tone, second half is lower tone
+    half_point = int(len(t) / 2)
+    note = np.zeros_like(t)
+    note[:half_point] = np.sin(freq1 * t[:half_point] * 2 * np.pi)
+    note[half_point:] = np.sin(freq2 * t[half_point:] * 2 * np.pi)
+
+    # Apply a smooth envelope to avoid clicks
     envelope = np.ones_like(note)
     attack = int(0.05 * sample_rate)
     release = int(0.05 * sample_rate)
     envelope[:attack] = np.linspace(0, 1, attack)
     envelope[-release:] = np.linspace(1, 0, release)
+
+    # Apply a slight fade between the two tones
+    mid_fade = int(0.05 * sample_rate)
+    if half_point > mid_fade:
+        envelope[half_point-mid_fade:half_point+mid_fade] = np.concatenate([
+            np.linspace(1, 0.7, mid_fade),
+            np.linspace(0.7, 1, mid_fade)
+        ])
+
     note = note * envelope
+
+    # Make it louder
+    note = note * 0.9
+
     # Convert to float32 for sounddevice
     audio = note.astype(np.float32)
     return audio, sample_rate

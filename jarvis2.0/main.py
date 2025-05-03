@@ -14,7 +14,8 @@ init()
 
 def print_system_info():
     print(f"{Fore.GREEN}=== Jarvis 2.0 Voice Assistant ===")
-    print(f"Say 'jarvis' to activate. A sound will play when activated.")
+    print(f"Say '{Fore.YELLOW}jarvis{Fore.GREEN}' clearly to activate. A sound will play when activated.")
+    print(f"Try to speak the wake word in a normal, clear voice.")
     print(f"After the sound, start speaking and pause when done.")
     print(f"Say 'exit' or 'quit' to end the chat{Style.RESET_ALL}")
     print()

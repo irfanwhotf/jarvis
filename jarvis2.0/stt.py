@@ -58,7 +58,10 @@ def listen_for_speech():
     porcupine = None
     stream = None
     try:
-        porcupine = pvporcupine.create(keywords=["jarvis"])
+        # Create porcupine with higher sensitivity (0.7) for better wake word detection
+        # Sensitivity range is 0-1, where 1 is most sensitive (may have more false positives)
+        # Default is 0.5, we're increasing to 0.7 for better detection
+        porcupine = pvporcupine.create(keywords=["jarvis"], sensitivities=[0.7])
         stream = sd.InputStream(
             samplerate=porcupine.sample_rate,
             channels=1,
